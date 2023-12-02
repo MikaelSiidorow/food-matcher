@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/stores";
 	import Share from "$lib/icons/share.svelte";
+	import { onDestroy, onMount } from "svelte";
 
 	export let data;
 
@@ -18,6 +20,16 @@
 			console.log(err);
 		}
 	};
+
+	let interval: ReturnType<typeof setInterval> | undefined;
+	onMount(() => {
+		interval = setInterval(async () => {
+			await invalidateAll();
+		}, 2000);
+	});
+	onDestroy(() => {
+		clearInterval(interval);
+	});
 </script>
 
 <div class="relative flex h-screen w-full flex-col">
