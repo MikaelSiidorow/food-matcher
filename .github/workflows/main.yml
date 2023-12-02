@@ -24,6 +24,11 @@ jobs:
     name: Lint and check
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_HOST: mock
+      DATABASE_USERNAME: mock
+      DATABASE_PASSWORD: mock
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,6 +66,11 @@ jobs:
 
     name: Integration test
     runs-on: ubuntu-latest
+
+    env:
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
 
     steps:
       - name: Checkout

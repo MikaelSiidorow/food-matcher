@@ -17,12 +17,19 @@
 			console.log(err);
 		}
 	};
+
+	const totalSessions = data.sessions.length;
+	const finishedSessions = data.sessions.filter((session) => session.finished).length;
 </script>
 
 <div class="flex h-screen w-full flex-col p-4">
-	<button class="flex self-end rounded-full p-2 text-2xl" on:click={share}><Share /></button>
+	<header class="flex w-full items-center justify-between">
+		<a href="/" class="text-lg underline">Back</a>
+		<span class="text-lg">{finishedSessions}/{totalSessions}</span>
+		<button class="flex rounded-full p-2 text-2xl" on:click={share}><Share /></button>
+	</header>
 	<main>
-		<h1>Matcher</h1>
-		<pre>{JSON.stringify(data, null, 2)}</pre>
+		<h1 class="sr-only">Matcher</h1>
+		<pre class="overflow-scroll">{JSON.stringify(data, null, 2)}</pre>
 	</main>
 </div>
