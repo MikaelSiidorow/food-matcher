@@ -74,6 +74,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.6.0
     version: 3.6.2(postcss@8.4.32)(svelte@4.2.8)
+  sveltekit-superforms:
+    specifier: ^1.11.0
+    version: 1.11.0(@sveltejs/kit@1.27.6)(svelte@4.2.8)(zod@3.22.4)
   tailwindcss:
     specifier: ^3.3.5
     version: 3.3.5
@@ -89,6 +92,9 @@ devDependencies:
   vitest:
     specifier: ^0.32.2
     version: 0.32.4
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 packages:
 
@@ -4286,6 +4292,18 @@ packages:
       locate-character: 3.0.0
       magic-string: 0.30.5
       periscopic: 3.1.0
+    dev: true
+
+  /sveltekit-superforms@1.11.0(@sveltejs/kit@1.27.6)(svelte@4.2.8)(zod@3.22.4):
+    resolution: {integrity: sha512-43hhy34Eb57erD2b+3Z6A97NBQHQ+ePXmGxeOqOATd7OeI1Vo/fw+vd5yGE9w/ql8DGDUqW1LKb4D3rJXdxSYg==}
+    peerDependencies:
+      '@sveltejs/kit': 1.x
+      svelte: 3.x || 4.x
+      zod: 3.x
+    dependencies:
+      '@sveltejs/kit': 1.27.6(svelte@4.2.8)(vite@4.5.0)
+      svelte: 4.2.8
+      zod: 3.22.4
     dev: true
 
   /synckit@0.8.5:
