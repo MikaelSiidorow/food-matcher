@@ -10,7 +10,7 @@
 	const share = async () => {
 		const shareData = {
 			text: "Match food with your friends!",
-			url: $page.url.href.replace("/match", ""),
+			url: $page.url.href.slice(0, -6),
 		};
 
 		try {
