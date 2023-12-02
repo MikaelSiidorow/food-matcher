@@ -1,0 +1,140 @@
+name: Main workflow
+on:
+  - push
+  - pull_request
+
+jobs:
+  cache-and-install:
+    name: Cache and install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/setup
+
+  validate:
+    needs: cache-and-install
+
+    name: Lint and check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/setup
+
+      - name: Lint
+        shell: bash
+        run: pnpm lint
+
+      - name: Check
+        shell: bash
+        run: pnpm check
+
+  unit-test:
+    needs: cache-and-install
+
+    name: Unit test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/setup
+
+      - name: Unit test
+        shell: bash
+        run: pnpm test:unit
+
+  integration-test:
+    needs: cache-and-install
+
+    name: Integration test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/setup
+
+      - name: Setup Playwright
+        shell: bash
+        run: pnpm exec playwright install chromium
+
+      - name: Integration test
+        shell: bash
+        run: pnpm test:integration
+
+  deploy-preview:
+    needs:
+      - validate
+      - unit-test
+      - integration-test
+    if: github.event_name == 'pull_request'
+
+    name: Deploy preview
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/setup
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+
+  deploy-production:
+    needs:
+      - validate
+      - unit-test
+      - integration-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    name: Deploy production
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/setup
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
