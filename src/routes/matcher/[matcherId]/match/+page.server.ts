@@ -97,3 +97,5 @@ export const actions = {
 		return { form };
 	},
 };
+
+export const ssr = false;
