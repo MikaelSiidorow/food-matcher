@@ -4,11 +4,13 @@ import { redirect } from "@sveltejs/kit";
 import { randomBytes } from "node:crypto";
 
 export const actions = {
-	default: async () => {
+	default: async (event) => {
 		const matcherId = randomBytes(4).toString("hex");
 
 		await db.insert(matcher).values({
 			id: matcherId,
+			createdBy: event.locals.sessionId,
+			createdAt: Date.now(),
 		});
 
 		throw redirect(303, `/matcher/${matcherId}`);

@@ -3,9 +3,13 @@ export default {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
 	theme: {
 		height: {
-			screen: ["100svh", "100vh"],
+			screen: ["100vh", "100svh"],
 		},
-		extend: {},
+		extend: {
+			height: {
+				"screen-1/2": ["50vh", "50svh"],
+			},
+		},
 	},
 	plugins: [],
 };

@@ -1,5 +1,13 @@
 import { relations } from "drizzle-orm";
-import { boolean, mysqlTable, primaryKey, varchar } from "drizzle-orm/mysql-core";
+import {
+	bigint,
+	boolean,
+	mysqlEnum,
+	mysqlTable,
+	primaryKey,
+	varchar,
+} from "drizzle-orm/mysql-core";
+import { foodTypes } from "../../data/foods";
 
 export const matcher = mysqlTable("matcher", {
 	id: varchar("id", {
@@ -7,6 +15,11 @@ export const matcher = mysqlTable("matcher", {
 	})
 		.notNull()
 		.primaryKey(),
+	finished: boolean("finished").notNull().default(false),
+	createdBy: varchar("created_by", {
+		length: 63,
+	}).notNull(),
+	createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 export const matcherRelation = relations(matcher, ({ many }) => ({
@@ -19,10 +32,12 @@ export const matcherSession = mysqlTable(
 		sessionId: varchar("id", {
 			length: 64,
 		}).notNull(),
-		matcherId: varchar("matcherId", {
+		matcherId: varchar("matcher_id", {
 			length: 32,
 		}).notNull(),
 		finished: boolean("finished").notNull().default(false),
+		createdAt: bigint("created_at", { mode: "number" }).notNull(),
+		updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({ columns: [table.sessionId, table.matcherId] }),
@@ -40,21 +55,19 @@ export const matcherSessionRelation = relations(matcherSession, ({ one, many }) 
 export const comparison = mysqlTable(
 	"comparison",
 	{
-		matcherId: varchar("matcherId", {
+		matcherId: varchar("matcher_id", {
 			length: 32,
 		}).notNull(),
-		sessionId: varchar("sessionId", {
+		sessionId: varchar("session_id", {
 			length: 64,
 		}).notNull(),
-		winner: varchar("winner", {
-			length: 255,
-		}).notNull(),
-		loser: varchar("loser", {
-			length: 255,
-		}).notNull(),
+		previous: mysqlEnum("previous", foodTypes).notNull(),
+		current: mysqlEnum("current", foodTypes).notNull(),
+		winner: mysqlEnum("winner", ["previous", "current"]).notNull(),
+		createdAt: bigint("created_at", { mode: "number" }).notNull(),
 	},
 	(table) => ({
-		pk: primaryKey({ columns: [table.matcherId, table.sessionId, table.winner, table.loser] }),
+		pk: primaryKey({ columns: [table.matcherId, table.sessionId, table.previous] }),
 	}),
 );
 
