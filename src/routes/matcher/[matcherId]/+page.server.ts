@@ -2,7 +2,7 @@ import { foodTypes } from "$lib/data/foods";
 import { db } from "$lib/server/db";
 import { comparison, matcherSession } from "$lib/server/db/schema.js";
 import { redirect } from "@sveltejs/kit";
-import { and, count, eq, sql } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 export const load = async (event) => {
 	const { matcherId } = event.params;
@@ -22,16 +22,6 @@ export const load = async (event) => {
 	if (matcher.finished) {
 		throw redirect(303, `/matcher/${matcherId}/results`);
 	}
-
-	await db
-		.insert(matcherSession)
-		.values({
-			matcherId,
-			sessionId,
-			createdAt: Date.now(),
-			updatedAt: Date.now(),
-		})
-		.onDuplicateKeyUpdate({ set: { matcherId: sql`matcher_id` } });
 
 	const comparisons = (
 		await db

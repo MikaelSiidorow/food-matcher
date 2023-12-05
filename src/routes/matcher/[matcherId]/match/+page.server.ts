@@ -1,8 +1,9 @@
 import { foodTypes } from "$lib/data/foods";
 import { db } from "$lib/server/db";
-import { comparison } from "$lib/server/db/schema.js";
+import { comparison, matcherSession } from "$lib/server/db/schema.js";
 import { shuffle } from "$lib/utils";
 import { fail, redirect } from "@sveltejs/kit";
+import { sql } from "drizzle-orm";
 import { superValidate } from "sveltekit-superforms/server";
 import * as z from "zod";
 
@@ -42,11 +43,6 @@ export const load = async (event) => {
 		},
 	});
 
-	// verify that a session exists for this matcher
-	if (!matcher?.matcherSession.some((session) => session.sessionId === sessionId)) {
-		throw redirect(303, `/matcher/${matcherId}`);
-	}
-
 	// get all comparisons for this session
 	const comparisons = await db.query.comparison.findMany({
 		where: (comparison, { and, eq }) =>
@@ -68,7 +64,9 @@ export const load = async (event) => {
 		sessionId,
 		previous,
 		current,
-		startedSessions: matcher?.matcherSession.length ?? 0,
+		startedSessions: matcher?.matcherSession.length
+			? matcher.matcherSession.length + (comparisons.length === 0 ? 1 : 0)
+			: 1,
 		finishedSessions: matcher?.matcherSession.filter((session) => session.finished).length ?? 0,
 	};
 };
@@ -84,6 +82,16 @@ export const actions = {
 		const { matcherId } = params;
 		const { sessionId } = locals;
 		const { winner, previous, current } = form.data;
+
+		await db
+			.insert(matcherSession)
+			.values({
+				matcherId,
+				sessionId,
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
+			})
+			.onDuplicateKeyUpdate({ set: { matcherId: sql`matcher_id` } });
 
 		await db.insert(comparison).values({
 			matcherId,
