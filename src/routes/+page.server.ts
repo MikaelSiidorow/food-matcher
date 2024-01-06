@@ -13,6 +13,6 @@ export const actions = {
 			createdAt: Date.now(),
 		});
 
-		throw redirect(303, `/matcher/${matcherId}`);
+		redirect(303, `/matcher/${matcherId}`);
 	},
 };

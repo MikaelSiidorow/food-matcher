@@ -24,7 +24,7 @@ export const load = async (event) => {
 	});
 
 	if (!matcher) {
-		throw error(404, "Matcher not found");
+		error(404, "Matcher not found");
 	}
 
 	const comparisons = matcher.matcherSession.flatMap((session) => session.comparison);

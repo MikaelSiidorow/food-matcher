@@ -53,7 +53,7 @@ export const load = async (event) => {
 
 	// verify that this session is not already finished
 	if (!current) {
-		throw redirect(303, `/matcher/${matcherId}`);
+		redirect(303, `/matcher/${matcherId}`);
 	}
 
 	const form = await superValidate(voteSchema);

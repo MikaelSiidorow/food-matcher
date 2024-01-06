@@ -15,11 +15,11 @@ export const load = async (event) => {
 	});
 
 	if (!matcher) {
-		throw error(404, "Matcher not found");
+		error(404, "Matcher not found");
 	}
 
 	if (matcher.finished) {
-		throw redirect(303, `/matcher/${matcherId}/results`);
+		redirect(303, `/matcher/${matcherId}/results`);
 	}
 
 	return {
@@ -43,19 +43,19 @@ export const actions = {
 		});
 
 		if (!foundMatcher) {
-			throw error(404, "Matcher not found");
+			error(404, "Matcher not found");
 		}
 
 		if (foundMatcher.finished) {
-			throw redirect(303, `/matcher/${matcherId}/results`);
+			redirect(303, `/matcher/${matcherId}/results`);
 		}
 
 		if (foundMatcher.createdBy !== sessionId) {
-			throw error(403, "You are not the creator of this matcher");
+			error(403, "You are not the creator of this matcher");
 		}
 
 		await db.update(matcher).set({ finished: true }).where(eq(matcher.id, matcherId));
 
-		throw redirect(303, `/matcher/${matcherId}/results`);
+		redirect(303, `/matcher/${matcherId}/results`);
 	},
 };

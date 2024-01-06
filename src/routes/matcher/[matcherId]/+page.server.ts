@@ -16,11 +16,11 @@ export const load = async (event) => {
 	});
 
 	if (!matcher) {
-		throw redirect(303, "/");
+		redirect(303, "/");
 	}
 
 	if (matcher.finished) {
-		throw redirect(303, `/matcher/${matcherId}/results`);
+		redirect(303, `/matcher/${matcherId}/results`);
 	}
 
 	const comparisons = (
@@ -36,8 +36,8 @@ export const load = async (event) => {
 			.set({ finished: true })
 			.where(and(eq(matcherSession.matcherId, matcherId), eq(matcherSession.sessionId, sessionId)));
 
-		throw redirect(303, `/matcher/${matcherId}/done`);
+		redirect(303, `/matcher/${matcherId}/done`);
 	}
 
-	throw redirect(303, `/matcher/${matcherId}/match`);
+	redirect(303, `/matcher/${matcherId}/match`);
 };

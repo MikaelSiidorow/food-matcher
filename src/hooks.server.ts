@@ -7,6 +7,7 @@ export const handle = async ({ event, resolve }) => {
 		httpOnly: true,
 		sameSite: "strict",
 		secure: true,
+		path: "/",
 	});
 
 	event.locals.sessionId = sessionId;
